@@ -20,7 +20,7 @@
     }
     .sidebar h2 {
       text-align: center;
-      color: #ff69b4;
+      color: #ff69b4; /* 🔹 Changed */
       margin-bottom: 30px;
     }
     .sidebar ul {
@@ -34,7 +34,7 @@
     }
     .sidebar ul li.active,
     .sidebar ul li:hover {
-      background: #7a3cff;
+      background: #ff69b4; /* 🔹 Changed */
       color: #fff;
       border-radius: 8px;
     }
@@ -67,8 +67,9 @@
     table th {
       background: #f1f1f1;
     }
+    /* 🔹 Pink Buttons */
     .view-btn {
-      background: #7a3cff;
+      background: #ff69b4;
       color: white;
       padding: 8px 14px;
       border-radius: 6px;
@@ -76,7 +77,12 @@
       font-size: 14px;
       cursor: pointer;
       border: none;
+      transition: background 0.2s;
     }
+    .view-btn:hover {
+      background: #e058a4; /* Slightly darker pink on hover */
+    }
+
     .modal {
       display: none;
       position: fixed;
@@ -99,7 +105,7 @@
       flex-direction: column;
     }
     .close-btn {
-      background: red;
+      background: #ff69b4; /* 🔹 Changed Close button too */
       color: white;
       border: none;
       padding: 8px 16px;
@@ -108,7 +114,12 @@
       margin-bottom: 10px;
       align-self: flex-end;
       font-size: 16px;
+      transition: background 0.2s;
     }
+    .close-btn:hover {
+      background: #e058a4;
+    }
+
     #pdfViewer {
       flex: 1;
       overflow: auto;
@@ -133,14 +144,12 @@
     <h2>Job Application Manager</h2>
     <ul>
       <li class="active">Resume & Cover Letter</li>
-      <!-- 🔹 Other buttons hidden -->
     </ul>
   </div>
 
   <div class="main">
     <div class="main-header">
       <h1>Resume & Cover Letter</h1>
-      <!-- 🔹 Hidden +New Application button -->
       <button class="btn">+ New Application</button>
     </div>
 
@@ -214,6 +223,3 @@
 
 </body>
 </html>
-
-
-

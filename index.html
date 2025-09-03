@@ -127,7 +127,9 @@
       margin: 10px auto;
       border: 1px solid #ccc;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      height: auto;
+      width: 100%;       /* Fit width */
+      height: auto;      /* Keep aspect ratio */
+      max-width: 100%;   /* Never exceed container */
     }
   </style>
 </head>
@@ -195,15 +197,8 @@
         for (let i = 1; i <= pdfDoc.numPages; i++) {
           const page = await pdfDoc.getPage(i);
 
-          // Fit page to modal height
-          const unscaledViewport = page.getViewport({ scale: 1 });
-          const containerHeight = pdfViewer.clientHeight - 20; 
-          const containerWidth = pdfViewer.clientWidth - 20;
-          const heightScale = containerHeight / unscaledViewport.height;
-          const widthScale = containerWidth / unscaledViewport.width;
-          const scale = Math.min(widthScale, heightScale); // Fit by both width & height
-
-          const viewport = page.getViewport({ scale });
+          // Render at high resolution
+          const viewport = page.getViewport({ scale: 2 });
 
           const canvas = document.createElement("canvas");
           const ctx = canvas.getContext("2d");

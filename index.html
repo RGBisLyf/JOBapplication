@@ -127,7 +127,6 @@
       margin: 10px auto;
       border: 1px solid #ccc;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      max-width: 100%;
       height: auto;
     }
   </style>
@@ -196,10 +195,14 @@
         for (let i = 1; i <= pdfDoc.numPages; i++) {
           const page = await pdfDoc.getPage(i);
 
-          // Fit page width to modal
+          // Fit page to modal height
           const unscaledViewport = page.getViewport({ scale: 1 });
-          const containerWidth = pdfViewer.clientWidth - 20; 
-          const scale = containerWidth / unscaledViewport.width;
+          const containerHeight = pdfViewer.clientHeight - 20; 
+          const containerWidth = pdfViewer.clientWidth - 20;
+          const heightScale = containerHeight / unscaledViewport.height;
+          const widthScale = containerWidth / unscaledViewport.width;
+          const scale = Math.min(widthScale, heightScale); // Fit by both width & height
+
           const viewport = page.getViewport({ scale });
 
           const canvas = document.createElement("canvas");

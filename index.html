@@ -1,126 +1,291 @@
-<!-- Sidebar -->
-<div class="sidebar">
-  <h2>Job Application Manager</h2>
-  <ul>
-    <li class="active" onclick="showSection('resumeSection')">Resume & Cover Letter</li>
-    <li onclick="showSection('infoSection')">Additional Information</li>
-    <li onclick="showSection('certSection')">Certificate</li>
-  </ul>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Application Manager</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f8f9fb;
+      display: flex;
+    }
+    .sidebar {
+      width: 220px;
+      background: #fff;
+      border-right: 1px solid #ddd;
+      height: 100vh;
+      padding: 20px 0;
+    }
+    .sidebar h2 {
+      text-align: center;
+      color: #ff69b4;
+      margin-bottom: 30px;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+    .sidebar ul li {
+      padding: 12px 20px;
+      cursor: pointer;
+      color: #333;
+    }
+    .sidebar ul li.active,
+    .sidebar ul li:hover {
+      background: #ff69b4;
+      color: #fff;
+      border-radius: 8px;
+    }
+    .main {
+      flex: 1;
+      padding: 20px;
+    }
+    .main-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btn {
+      display: none;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    table th, table td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    table th {
+      background: #f1f1f1;
+    }
+    .view-btn {
+      background: #ff69b4;
+      color: white;
+      padding: 8px 14px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      transition: background 0.2s;
+    }
+    .view-btn:hover {
+      background: #e058a4;
+    }
 
-<!-- Resume & Cover Letter Section -->
-<div id="resumeSection" class="section">
-  <div class="main-header">
-    <h1>Resume & Cover Letter</h1>
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 8px;
+      padding: 10px;
+      width: 95%;
+      height: 95%;
+      display: flex;
+      flex-direction: column;
+    }
+    .close-btn {
+      background: #ff69b4;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-bottom: 10px;
+      align-self: flex-end;
+      font-size: 16px;
+      transition: background 0.2s;
+    }
+    .close-btn:hover {
+      background: #e058a4;
+    }
+
+    #pdfViewer, #imgViewer {
+      flex: 1;
+      overflow: auto;
+      border: 1px solid #ddd;
+      background: #fafafa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #pdfViewer canvas, #imgViewer img {
+      margin: 10px auto;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      max-width: 90%;
+      height: auto;
+    }
+
+    /* Hide all sections except active */
+    .section {
+      display: none;
+    }
+    .section.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <h2>Job Application Manager</h2>
+    <ul>
+      <li class="active" onclick="showSection('resumeSection', this)">Resume & Cover Letter</li>
+      <li onclick="showSection('infoSection', this)">Additional Information</li>
+    </ul>
   </div>
-  <table>
-    <thead>
-      <tr>
-        <th>Status</th>
-        <th>Job</th>
-        <th>Resume</th>
-        <th>Cover Letter</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Interested</td>
-        <td>Virtual Assistant</td>
-        <td><button class="view-btn" onclick="openModal('resume.pdf')">View Resume</button></td>
-        <td><button class="view-btn" onclick="openModal('coverletter.pdf')">View Cover Letter</button></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
 
-<!-- Additional Info Section -->
-<div id="infoSection" class="section" style="display:none;">
-  <div class="main-header">
-    <h1>Additional Information</h1>
+  <div class="main">
+    <!-- Resume Section -->
+    <div id="resumeSection" class="section active">
+      <div class="main-header">
+        <h1>Resume & Cover Letter</h1>
+        <button class="btn">+ New Application</button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th>Job</th>
+            <th>Resume</th>
+            <th>Cover Letter</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Interested</td>
+            <td>Virtual Assistant</td>
+            <td><button class="view-btn" onclick="openPDF('resume.pdf')">View Resume</button></td>
+            <td><button class="view-btn" onclick="openPDF('coverletter.pdf')">View Cover Letter</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Additional Info Section -->
+    <div id="infoSection" class="section">
+      <div class="main-header">
+        <h1>Additional Information</h1>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>View</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>PC Specification</td>
+            <td><button class="view-btn" onclick="openImage('pcspecs.jpg')">View</button></td>
+          </tr>
+          <tr>
+            <td>Phone Specification</td>
+            <td><button class="view-btn" onclick="openImage('phonespecs.jpg')">View</button></td>
+          </tr>
+          <tr>
+            <td>WPM Speedtest Result</td>
+            <td><button class="view-btn" onclick="openImage('wpm.jpg')">View</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-  <table>
-    <thead>
-      <tr>
-        <th>Category</th>
-        <th>View</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>PC Specification</td>
-        <td><button class="view-btn" onclick="openImage('pcspecs.jpg')">View</button></td>
-      </tr>
-      <tr>
-        <td>Phone Specification</td>
-        <td><button class="view-btn" onclick="openImage('phonespecs.jpg')">View</button></td>
-      </tr>
-      <tr>
-        <td>Words Per Minute (WPM)</td>
-        <td><button class="view-btn" onclick="openImage('wpm.jpg')">View</button></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
 
-<!-- Certificate Section -->
-<div id="certSection" class="section" style="display:none;">
-  <div class="main-header">
-    <h1>Certificates</h1>
+  <!-- PDF Modal -->
+  <div id="fileModal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModal('fileModal')">✖ Close</button>
+      <div id="pdfViewer">Loading...</div>
+    </div>
   </div>
-  <table>
-    <thead>
-      <tr>
-        <th>Certificate</th>
-        <th>View</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>GPA</td>
-        <td><button class="view-btn" onclick="openImage('gpa.jpg')">View</button></td>
-      </tr>
-      <tr>
-        <td>Amazon Web Services Cloud</td>
-        <td><button class="view-btn" onclick="openImage('aws.jpg')">View</button></td>
-      </tr>
-      <tr>
-        <td>ASEAN Data Science Explorers</td>
-        <td><button class="view-btn" onclick="openImage('asean.jpg')">View</button></td>
-      </tr>
-      <tr>
-        <td>The Why and How of English Language in the Workplace</td>
-        <td><button class="view-btn" onclick="openImage('english.jpg')">View</button></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
 
-<!-- Image Modal (re-use same modal for pictures) -->
-<div id="imageModal" class="modal">
-  <div class="modal-content">
-    <button class="close-btn" onclick="closeImage()">✖ Close</button>
-    <img id="imageViewer" src="" alt="Preview" style="max-width:95%; max-height:95%; margin:auto;">
+  <!-- Image Modal -->
+  <div id="imgModal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModal('imgModal')">✖ Close</button>
+      <div id="imgViewer"></div>
+    </div>
   </div>
-</div>
 
-<script>
-  function showSection(id) {
-    document.querySelectorAll('.section').forEach(sec => sec.style.display = 'none');
-    document.getElementById(id).style.display = 'block';
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
-    document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
-    event.target.classList.add('active');
-  }
+  <script>
+    // Sidebar navigation
+    function showSection(sectionId, el) {
+      document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(sectionId).classList.add("active");
 
-  function openImage(file) {
-    const modal = document.getElementById("imageModal");
-    const viewer = document.getElementById("imageViewer");
-    modal.style.display = "flex";
-    viewer.src = file;
-  }
+      document.querySelectorAll(".sidebar ul li").forEach(li => li.classList.remove("active"));
+      el.classList.add("active");
+    }
 
-  function closeImage() {
-    document.getElementById("imageModal").style.display = "none";
-    document.getElementById("imageViewer").src = "";
-  }
-</script>
+    // Open PDF in modal
+    async function openPDF(file) {
+      const modal = document.getElementById("fileModal");
+      const pdfViewer = document.getElementById("pdfViewer");
+
+      modal.style.display = "flex";
+      pdfViewer.innerHTML = "Loading...";
+
+      try {
+        const pdfDoc = await pdfjsLib.getDocument(file).promise;
+        pdfViewer.innerHTML = "";
+
+        for (let i = 1; i <= pdfDoc.numPages; i++) {
+          const page = await pdfDoc.getPage(i);
+          const viewport = page.getViewport({ scale: 2 });
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+          await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+          pdfViewer.appendChild(canvas);
+        }
+      } catch (err) {
+        pdfViewer.innerHTML = `<p style="color:red;">⚠️ Failed to load ${file}</p>`;
+      }
+    }
+
+    // Open image in modal
+    function openImage(file) {
+      const modal = document.getElementById("imgModal");
+      const imgViewer = document.getElementById("imgViewer");
+
+      modal.style.display = "flex";
+      imgViewer.innerHTML = `<img src="${file}" alt="Image Preview">`;
+    }
+
+    // Close modal
+    function closeModal(id) {
+      document.getElementById(id).style.display = "none";
+      if (id === "fileModal") document.getElementById("pdfViewer").innerHTML = "";
+      if (id === "imgModal") document.getElementById("imgViewer").innerHTML = "";
+    }
+  </script>
+
+</body>
+</html>

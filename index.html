@@ -120,15 +120,15 @@
       border: 1px solid #ddd;
       background: #fafafa;
       display: flex;
-      justify-content: center;
-      align-items: flex-start;
       flex-direction: column;
+      align-items: center;
     }
     #pdfViewer canvas {
       margin: 10px auto;
-      display: block;
       border: 1px solid #ccc;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      max-width: 100%;
+      height: auto;
     }
   </style>
 </head>
@@ -196,9 +196,9 @@
         for (let i = 1; i <= pdfDoc.numPages; i++) {
           const page = await pdfDoc.getPage(i);
 
-          // Fit page width to container
+          // Fit page width to modal
           const unscaledViewport = page.getViewport({ scale: 1 });
-          const containerWidth = pdfViewer.clientWidth - 20;
+          const containerWidth = pdfViewer.clientWidth - 20; 
           const scale = containerWidth / unscaledViewport.width;
           const viewport = page.getViewport({ scale });
 
@@ -220,11 +220,6 @@
       document.getElementById("fileModal").style.display = "none";
       document.getElementById("pdfViewer").innerHTML = "";
     }
-
-    // Close modal with ESC key
-    document.addEventListener("keydown", e => {
-      if (e.key === "Escape") closeModal();
-    });
   </script>
 
 </body>

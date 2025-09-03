@@ -152,6 +152,8 @@
     <ul>
       <li class="active" onclick="showSection('resumeSection', this)">Resume & Cover Letter</li>
       <li onclick="showSection('infoSection', this)">Additional Information</li>
+      <!-- NEW: Certificate button -->
+      <li onclick="showSection('certSection', this)">Certificate</li>
     </ul>
   </div>
 
@@ -210,12 +212,47 @@
             <td><button class="view-btn" onclick="openImage('speed.jpg')">View</button></td>
           </tr>
           <tr>
-          <td>Words Per Minute (WPM)</td>
-          <td><button class="view-btn" onclick="openImage('wpm.jpg')">View</button></td>
-        </tr>
+            <td>Words Per Minute (WPM)</td>
+            <td><button class="view-btn" onclick="openImage('wpm.jpg')">View</button></td>
+          </tr>
         </tbody>
       </table>
     </div>
+
+    <!-- NEW: Certificate Section -->
+    <div id="certSection" class="section">
+      <div class="main-header">
+        <h1>Certificate</h1>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Certificate</th>
+            <th>View</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>GPA</td>
+            <td><button class="view-btn" onclick="openImage('gpa.jpg')">View</button></td>
+          </tr>
+          <tr>
+            <td>Amazon Web Services Cloud</td>
+            <td><button class="view-btn" onclick="openImage('aws.jpg')">View</button></td>
+          </tr>
+          <tr>
+            <td>ASEAN Data Science Explorers</td>
+            <td><button class="view-btn" onclick="openImage('asean.jpg')">View</button></td>
+          </tr>
+          <tr>
+            <td>The Why and How of English Language in the Workplace</td>
+            <td><button class="view-btn" onclick="openImage('english.jpg')">View</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- END Certificate Section -->
   </div>
 
   <!-- PDF Modal -->
@@ -293,4 +330,3 @@
 
 </body>
 </html>
-

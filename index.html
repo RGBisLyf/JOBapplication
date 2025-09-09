@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Job Application Manager</title>
   <style>
+    /* ===== Base Layout (unchanged design) ===== */
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: #f8f9fb;
       display: flex;
+      height: 100vh;
+      overflow: hidden;
     }
     .sidebar {
       width: 220px;
@@ -17,20 +20,19 @@
       border-right: 1px solid #ddd;
       height: 100vh;
       padding: 20px 0;
+      flex-shrink: 0;
     }
     .sidebar h2 {
       text-align: center;
       color: #ff69b4;
       margin-bottom: 30px;
     }
-    .sidebar ul {
-      list-style: none;
-      padding: 0;
-    }
+    .sidebar ul { list-style: none; padding: 0; margin: 0; }
     .sidebar ul li {
       padding: 12px 20px;
       cursor: pointer;
       color: #333;
+      transition: 0.2s ease;
     }
     .sidebar ul li.active,
     .sidebar ul li:hover {
@@ -38,13 +40,19 @@
       color: #fff;
       border-radius: 8px;
     }
+
     .main {
       flex: 1;
       padding: 20px;
+      overflow-y: auto;
     }
-    .btn {
-      display: none;
+    .main-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
+    .btn { display: none; } /* keep hidden as before */
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -59,37 +67,35 @@
       text-align: left;
       border-bottom: 1px solid #eee;
     }
-    table th {
-      background: #f1f1f1;
-    }
+    table th { background: #f1f1f1; }
+
     .view-btn {
       background: #ff69b4;
-      color: white;
+      color: #fff;
       padding: 8px 14px;
       border-radius: 6px;
       text-decoration: none;
       font-size: 14px;
       cursor: pointer;
       border: none;
-      transition: background 0.2s;
+      transition: background 0.2s ease;
     }
-    .view-btn:hover {
-      background: #e058a4;
-    }
+    .view-btn:hover { background: #e058a4; }
+
+    /* ===== Modals (unchanged design) ===== */
     .modal {
       display: none;
       position: fixed;
       z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
       background: rgba(0,0,0,0.85);
       justify-content: center;
       align-items: center;
+      padding: 10px;
     }
     .modal-content {
-      background: white;
+      background: #fff;
       border-radius: 8px;
       padding: 10px;
       width: 95%;
@@ -99,7 +105,7 @@
     }
     .close-btn {
       background: #ff69b4;
-      color: white;
+      color: #fff;
       border: none;
       padding: 8px 16px;
       border-radius: 6px;
@@ -107,11 +113,10 @@
       margin-bottom: 10px;
       align-self: flex-end;
       font-size: 16px;
-      transition: background 0.2s;
+      transition: background 0.2s ease;
     }
-    .close-btn:hover {
-      background: #e058a4;
-    }
+    .close-btn:hover { background: #e058a4; }
+
     #pdfViewer, #imgViewer {
       flex: 1;
       overflow: auto;
@@ -128,200 +133,181 @@
       max-width: 90%;
       height: auto;
     }
-    .panel {
-      display: none;
-    }
-    .panel.active {
-      display: block;
-    }
 
-    /* 🔹 WELCOME PAGE STYLING */
-    .welcome-header {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 30px;
-      padding: 40px;
-      background: linear-gradient(135deg, #ff69b4, #7a3cff);
-      color: white;
-      border-radius: 12px;
-      margin-bottom: 30px;
+    /* ===== Sections toggle (unchanged) ===== */
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* ===== Welcome page extras (new but scoped) ===== */
+    .welcome-container {
       text-align: center;
+      padding: 30px 10px;
+      max-width: 1000px;
+      margin: 0 auto;
     }
     .profile-pic {
-      width: 160px;
-      height: 160px;
+      width: 140px; height: 140px;
       border-radius: 50%;
-      border: 4px solid white;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       object-fit: cover;
-      animation: fadeIn 1.2s ease-in-out;
+      border: 4px solid #ff69b4;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      margin-bottom: 16px;
     }
-    .intro-text h1 {
-      font-size: 2.5rem;
-      margin: 0;
+    .welcome-name {
+      font-size: 28px;
+      color: #ff69b4;
+      margin: 6px 0 8px;
     }
-    .intro-text .highlight {
-      color: yellow;
+    .welcome-desc {
+      font-size: 16px;
+      color: #555;
+      max-width: 720px;
+      margin: 0 auto 22px;
     }
-    .projects {
-      padding: 20px;
+
+    .skills-title {
+      margin: 26px 0 10px;
+      font-size: 20px;
+      color: #333;
+      text-align: left;
     }
-    .project-grid {
+    /* keep within main width */
+    .skills-wrap { max-width: 1000px; margin: 0 auto; }
+
+    .skills-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 16px;
+      margin: 12px 0 26px;
     }
-    .project-card {
+    .skill-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      padding: 14px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    .project-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    .skill-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.12);
     }
-    .demo-btn {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 10px 18px;
-      background: #ff69b4;
-      color: white;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: bold;
-      transition: background 0.3s ease;
+    .skill-card img {
+      width: 44px; height: 44px;
+      margin-bottom: 8px;
+      object-fit: contain;
     }
-    .demo-btn:hover {
-      background: #ff3385;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.9); }
-      to { opacity: 1; transform: scale(1); }
-    }
-    .animate-fade { animation: fadeIn 1.2s ease-in-out; }
-    .animate-slide { animation: slideIn 1.3s ease-out; }
-    .animate-up { animation: slideUp 1.5s ease-in-out; }
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-30px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
+    .skill-card span {
+      font-size: 13px; color: #333;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-
+  <!-- ===== Sidebar ===== -->
   <div class="sidebar">
     <h2>Job Application Manager</h2>
     <ul>
-      <li class="active" onclick="showPanel('welcomePanel', this)">Welcome</li>
-      <li onclick="showPanel('resumeSection', this)">Resume & Cover Letter</li>
-      <li onclick="showPanel('infoSection', this)">Additional Information</li>
-      <li onclick="showPanel('certificateSection', this)">Certificate</li>
+      <li class="active" onclick="showSection('welcomeSection', this)">Welcome</li>
+      <li onclick="showSection('resumeSection', this)">Resume & Cover Letter</li>
+      <li onclick="showSection('infoSection', this)">Additional Information</li>
+      <li onclick="showSection('certSection', this)">Certificates</li>
     </ul>
   </div>
 
+  <!-- ===== Main ===== -->
   <div class="main">
-    <!-- 🔹 Welcome Panel -->
-    <div id="welcomePanel" class="panel active">
-      <section class="welcome-header">
-        <img src="your-photo.jpg" alt="Your Photo" class="profile-pic" />
-        <div class="intro-text">
-          <h1 class="animate-fade">Hi, I'm <span class="highlight">Your Name</span></h1>
-          <p class="animate-slide">I’m an IT graduate passionate about web development, cloud, and data science. 
-          This is my portfolio of work and career journey 🚀</p>
+    <!-- === Welcome (default) === -->
+    <div id="welcomeSection" class="section active">
+      <div class="welcome-container">
+        <img src="/your-photo.jpg" alt="Your Photo" class="profile-pic" />
+        <h1 class="welcome-name">Your Name</h1>
+        <p class="welcome-desc">
+          IT Graduate & Experienced Amazon VA — passionate about technology, product research, and eCommerce solutions.
+        </p>
+
+        <div class="skills-wrap">
+          <h2 class="skills-title">💻 IT Skills</h2>
+          <div class="skills-grid">
+            <div class="skill-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" alt=""><span>MySQL</span></div>
+            <div class="skill-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg" alt=""><span>PHP</span></div>
+            <div class="skill-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" alt=""><span>Java</span></div>
+            <div class="skill-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" alt=""><span>JavaScript</span></div>
+            <div class="skill-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-plain.svg" alt=""><span>Laravel</span></div>
+            <div class="skill-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" alt=""><span>CSS</span></div>
+            <div class="skill-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt=""><span>Python</span></div>
+            <div class="skill-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt=""><span>HTML</span></div>
+            <div class="skill-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/androidstudio/androidstudio-original.svg" alt=""><span>Android Studio</span></div>
+            <div class="skill-card"><img src="https://cdn-icons-png.flaticon.com/512/873/873107.png" alt=""><span>Arduino</span></div>
+          </div>
+
+          <h2 class="skills-title">📦 Amazon VA Skills</h2>
+          <div class="skills-grid">
+            <div class="skill-card"><img src="https://play-lh.googleusercontent.com/7jzBZf-6HScGzzqVrCq2iCNqutDdu40sD87EVz30gzOedNsEhf7cKZrxgW0iFjCsFMY" alt=""><span>Jungle Scout</span></div>
+            <div class="skill-card"><img src="https://cdn.worldvectorlogo.com/logos/keepa.svg" alt=""><span>Keepa</span></div>
+            <div class="skill-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt=""><span>Google Sheets</span></div>
+            <div class="skill-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt=""><span>Google Workspace</span></div>
+            <div class="skill-card"><img src="https://cdn.iconscout.com/icon/free/png-256/free-amazon-1869030-1583154.png" alt=""><span>Amazon Seller Central</span></div>
+            <div class="skill-card"><img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt=""><span>Zinia / Superbrowser</span></div>
+            <div class="skill-card"><img src="https://via.placeholder.com/64x64.png?text=JIJIA" alt=""><span>BWS JIJIA</span></div>
+          </div>
         </div>
-      </section>
-      <section class="projects">
-        <h2 class="animate-fade">💻 My IT Projects</h2>
-        <div class="project-grid">
-          <div class="project-card animate-up">
-            <h3>Job Application Manager</h3>
-            <p>A web app to manage resumes, cover letters, and certificates with PDF viewing features.</p>
-            <a href="https://job-application-flame.vercel.app/" target="_blank" class="demo-btn">🚀 Demo</a>
-          </div>
-          <div class="project-card animate-up">
-            <h3>Cloud Portfolio</h3>
-            <p>Hands-on AWS projects including S3 hosting, Lambda automation, and EC2 deployment.</p>
-            <a href="#" target="_blank" class="demo-btn">🚀 Demo</a>
-          </div>
-          <div class="project-card animate-up">
-            <h3>Data Explorer</h3>
-            <p>ASEAN Data Science Explorer challenge entry: visualizing data insights using Tableau.</p>
-            <a href="#" target="_blank" class="demo-btn">🚀 Demo</a>
-          </div>
-        </div>
-      </section>
+      </div>
     </div>
 
-    <!-- Resume Section -->
-    <div id="resumeSection" class="panel">
-      <h1>Resume & Cover Letter</h1>
+    <!-- === Resume & Cover Letter === -->
+    <div id="resumeSection" class="section">
+      <div class="main-header">
+        <h1>Resume & Cover Letter</h1>
+        <button class="btn">+ New Application</button>
+      </div>
       <table>
         <thead>
-          <tr>
-            <th>Status</th>
-            <th>Job</th>
-            <th>Resume</th>
-            <th>Cover Letter</th>
-          </tr>
+          <tr><th>Status</th><th>Job</th><th>Resume</th><th>Cover Letter</th></tr>
         </thead>
         <tbody>
           <tr>
             <td>Interested</td>
             <td>Virtual Assistant</td>
-            <td><button class="view-btn" onclick="openPDF('resume.pdf')">View Resume</button></td>
-            <td><button class="view-btn" onclick="openPDF('coverletter.pdf')">View Cover Letter</button></td>
+            <td><button class="view-btn" onclick="openPDF('/resume.pdf')">View Resume</button></td>
+            <td><button class="view-btn" onclick="openPDF('/coverletter.pdf')">View Cover Letter</button></td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- Additional Info Section -->
-    <div id="infoSection" class="panel">
-      <h1>Additional Information</h1>
+    <!-- === Additional Information === -->
+    <div id="infoSection" class="section">
+      <div class="main-header"><h1>Additional Information</h1></div>
       <table>
-        <thead>
-          <tr>
-            <th>Category</th>
-            <th>View</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Category</th><th>View</th></tr></thead>
         <tbody>
-          <tr><td>PC Specification</td><td><button class="view-btn" onclick="openImage('pcspecs.jpg')">View</button></td></tr>
-          <tr><td>Phone Specification</td><td><button class="view-btn" onclick="openImage('phonespecs.jpg')">View</button></td></tr>
-          <tr><td>WPM Speedtest Result</td><td><button class="view-btn" onclick="openImage('speed.jpg')">View</button></td></tr>
-          <tr><td>Words Per Minute (WPM)</td><td><button class="view-btn" onclick="openImage('wpm.jpg')">View</button></td></tr>
+          <tr><td>PC Specification</td><td><button class="view-btn" onclick="openImage('/pcspecs.jpg')">View</button></td></tr>
+          <tr><td>Phone Specification</td><td><button class="view-btn" onclick="openImage('/phonespecs.jpg')">View</button></td></tr>
+          <tr><td>WPM Speedtest Result</td><td><button class="view-btn" onclick="openImage('/speed.jpg')">View</button></td></tr>
+          <tr><td>Words Per Minute (WPM)</td><td><button class="view-btn" onclick="openImage('/wpm.jpg')">View</button></td></tr>
         </tbody>
       </table>
     </div>
 
-    <!-- Certificate Section -->
-    <div id="certificateSection" class="panel">
-      <h1>Certificates</h1>
+    <!-- === Certificates === -->
+    <div id="certSection" class="section">
+      <div class="main-header"><h1>Certificates</h1></div>
       <table>
-        <thead>
-          <tr>
-            <th>Certificate</th>
-            <th>View</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Certificate</th><th>View</th></tr></thead>
         <tbody>
-          <tr><td>GPA</td><td><button class="view-btn" onclick="openImage('gpa.jpg')">View</button></td></tr>
-          <tr><td>Amazon Web Services Cloud</td><td><button class="view-btn" onclick="openImage('aws.jpg')">View</button></td></tr>
-          <tr><td>ASEAN Data Science Explorers</td><td><button class="view-btn" onclick="openImage('asean.jpg')">View</button></td></tr>
-          <tr><td>The Why and How of English Language in the Workplace</td><td><button class="view-btn" onclick="openImage('english.jpg')">View</button></td></tr>
+          <tr><td>GPA</td><td><button class="view-btn" onclick="openImage('/gpa.jpg')">View</button></td></tr>
+          <tr><td>Amazon Web Services Cloud</td><td><button class="view-btn" onclick="openImage('/aws.jpg')">View</button></td></tr>
+          <tr><td>ASEAN Data Science Explorers</td><td><button class="view-btn" onclick="openImage('/asean.jpg')">View</button></td></tr>
+          <tr><td>The Why and How of English Language in the Workplace</td><td><button class="view-btn" onclick="openImage('/english.jpg')">View</button></td></tr>
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- PDF Modal -->
+  <!-- ===== PDF Modal ===== -->
   <div id="fileModal" class="modal">
     <div class="modal-content">
       <button class="close-btn" onclick="closeModal('fileModal')">✖ Close</button>
@@ -329,7 +315,7 @@
     </div>
   </div>
 
-  <!-- Image Modal -->
+  <!-- ===== Image Modal ===== -->
   <div id="imgModal" class="modal">
     <div class="modal-content">
       <button class="close-btn" onclick="closeModal('imgModal')">✖ Close</button>
@@ -340,40 +326,48 @@
   <!-- PDF.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   <script>
-    function showPanel(panelId, el) {
-      document.querySelectorAll(".panel").forEach(sec => sec.classList.remove("active"));
-      document.getElementById(panelId).classList.add("active");
+    // Sidebar navigation
+    function showSection(sectionId, el) {
+      document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(sectionId).classList.add("active");
       document.querySelectorAll(".sidebar ul li").forEach(li => li.classList.remove("active"));
       el.classList.add("active");
     }
+
+    // Open PDF in modal
     async function openPDF(file) {
       const modal = document.getElementById("fileModal");
       const pdfViewer = document.getElementById("pdfViewer");
       modal.style.display = "flex";
       pdfViewer.innerHTML = "Loading...";
+
       try {
         const pdfDoc = await pdfjsLib.getDocument(file).promise;
         pdfViewer.innerHTML = "";
         for (let i = 1; i <= pdfDoc.numPages; i++) {
           const page = await pdfDoc.getPage(i);
-          const viewport = page.getViewport({ scale: 2 });
+          const viewport = page.getViewport({ scale: 1.5 }); // clear & not oversized
           const canvas = document.createElement("canvas");
           const ctx = canvas.getContext("2d");
           canvas.height = viewport.height;
           canvas.width = viewport.width;
-          await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+          await page.render({ canvasContext: ctx, viewport }).promise;
           pdfViewer.appendChild(canvas);
         }
       } catch (err) {
         pdfViewer.innerHTML = `<p style="color:red;">⚠️ Failed to load ${file}</p>`;
       }
     }
+
+    // Open image in modal
     function openImage(file) {
       const modal = document.getElementById("imgModal");
       const imgViewer = document.getElementById("imgViewer");
       modal.style.display = "flex";
-      imgViewer.innerHTML = `<img src="${file}" alt="Image Preview">`;
+      imgViewer.innerHTML = `<img src="${file}" alt="Preview">`;
     }
+
+    // Close modal
     function closeModal(id) {
       document.getElementById(id).style.display = "none";
       if (id === "fileModal") document.getElementById("pdfViewer").innerHTML = "";

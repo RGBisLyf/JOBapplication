@@ -1,285 +1,612 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Job Application Manager</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
+
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f8f9fb;
-      display: flex;
-    }
-    .sidebar {
-      width: 220px;
-      background: #fff;
-      border-right: 1px solid #ddd;
-      height: 100vh;
-      padding: 20px 0;
-    }
-    .sidebar h2 {
-      text-align: center;
-      color: #ff69b4;
-      margin-bottom: 30px;
-    }
-    .sidebar ul {
-      list-style: none;
-      padding: 0;
-    }
-    .sidebar ul li {
-      padding: 12px 20px;
-      cursor: pointer;
-      color: #333;
-    }
-    .sidebar ul li.active,
-    .sidebar ul li:hover {
-      background: #ff69b4;
-      color: #fff;
-      border-radius: 8px;
-    }
-    .main {
-      flex: 1;
-      padding: 20px;
-    }
-    .main-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .btn {
-      display: none;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background: #fff;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    table th, table td {
-      padding: 15px;
-      text-align: left;
-      border-bottom: 1px solid #eee;
-    }
-    table th {
-      background: #f1f1f1;
-    }
-    .view-btn {
-      background: #ff69b4;
-      color: white;
-      padding: 8px 14px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-size: 14px;
-      cursor: pointer;
-      border: none;
-      transition: background 0.2s;
-    }
-    .view-btn:hover {
-      background: #e058a4;
-    }
+  /* Reset & basic */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Arial, sans-serif;
+    background: #f8f9fb;
+    color: #111;
+    display: flex;
+    min-height: 100vh;
+  }
 
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.85);
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-content {
-      background: white;
-      border-radius: 8px;
-      padding: 10px;
-      width: 95%;
-      height: 95%;
-      display: flex;
-      flex-direction: column;
-    }
-    .close-btn {
-      background: #ff69b4;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-bottom: 10px;
-      align-self: flex-end;
-      font-size: 16px;
-      transition: background 0.2s;
-    }
-    .close-btn:hover {
-      background: #e058a4;
-    }
+  /* Sidebar */
+  .sidebar {
+    width: 220px;
+    background: #fff;
+    border-right: 1px solid #ddd;
+    height: 100vh;
+    padding: 20px 0;
+    position: fixed;
+    top: 0; left: 0;
+  }
+  .sidebar h2 {
+    text-align: center;
+    color: #ff69b4;
+    margin-bottom: 30px;
+  }
+  .sidebar ul {
+    list-style: none;
+  }
+  .sidebar ul li {
+    padding: 12px 20px;
+    cursor: pointer;
+    color: #333;
+    transition: all 0.25s ease;
+  }
+  .sidebar ul li.active,
+  .sidebar ul li:hover {
+    background: #ff69b4;
+    color: #fff;
+    border-radius: 8px;
+  }
 
-    #pdfViewer, #imgViewer {
-      flex: 1;
-      overflow: auto;
-      border: 1px solid #ddd;
-      background: #fafafa;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    #pdfViewer canvas, #imgViewer img {
-      margin: 10px auto;
-      border: 1px solid #ccc;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      max-width: 90%;
-      height: auto;
-    }
+  /* Main content */
+  .main {
+    flex: 1;
+    padding: 28px;
+    margin-left: 220px;
+  }
 
-    /* Hide all sections except active */
-    .section {
-      display: none;
-    }
-    .section.active {
-      display: block;
-    }
-table th:nth-child(2), table td:nth-child(2) {
-  width: 60%;
+  /* Sections */
+  .section { display: none; }
+  #welcomeSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 18px;
+  }
+
+  /* Intro box */
+  .intro-box {
+    background: linear-gradient(135deg, #ff69b4, #e058a4);
+    color: white;
+    padding: 26px;
+    border-radius: 20px;
+    max-width: 760px;
+    width: 100%;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .intro-box img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 5px solid white;
+    margin-bottom: 12px;
+    object-fit: cover;
+  }
+  .intro-box h1 { margin: 8px 0 6px; font-size: 24px; }
+  .intro-box p { margin: 0; max-width: 680px; }
+
+  /* Headings */
+  #welcomeSection h2 { color: #ff69b4; margin: 22px 0 8px; font-size: 20px; }
+
+  /* Skills & tools grid */
+  .circle-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 18px;
+    max-width: 980px;
+    width: 100%;
+  }
+  .circle-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 13px;
+    width: 90px;
+    text-align: center;
+  }
+  .circle-item i, .circle-item img { font-size: 36px; width: 48px; height: 48px; object-fit: contain; }
+  .circle-item span { margin-top: 6px; }
+  .circle-item.no-logo .big-letter {
+    font-size: 32px; font-weight: 900; color: #ff69b4;
+    width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; background: #ffe6f2; margin-bottom: 6px;
+  }
+
+  /* Projects */
+  .projects {
+    width: 100%;
+    max-width: 960px;
+    display: grid;
+    grid-template-columns: repeat(3, 250px);
+    gap: 20px;
+    justify-content: center;
+    margin: 0 auto 2px;
+  }
+  .project-card {
+    width: 250px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .project-card img { width: 100%; height: 150px; object-fit: cover; }
+  .project-card .content { padding: 12px; display: flex; flex-direction: column; gap: 10px; flex: 1; justify-content: space-between; }
+  .project-card h3 { font-size: 16px; margin: 0; }
+  .project-card p { margin: 0; min-height: 36px; }
+  .project-card button {
+    background: #ff69b4;
+    border: none;
+    padding: 8px 12px;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%; /* ensure button width consistent */
+  }
+  .project-card button:hover { background: #e058a4; }
+
+  .projects-it {
+  display: flex;
+  justify-content: center;
 }
 
-table th:last-child, table td:last-child {
-  text-align: center;
-  width: 20%;
+  /* Tables & buttons */
+   table {
+    width: 100%;          /* full width of container */
+    max-width: 960px;     /* limits width so tables align nicely */
+    margin: 0 auto 20px;  /* centers tables and adds bottom spacing */
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
-    
-  </style>
+
+.button-group {
+  display: flex;
+  gap: 8px; /* controls the space between buttons */
+  margin-top: 10px; /* space above buttons */
+}
+
+.button-group button {
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+/* Table headers and cells */
+/* Make tables uniform and aligned */
+table {
+    width: 100%;             /* full width of parent container */
+    max-width: 960px;        /* same max width for all tables */
+    margin: 0 auto 20px;     /* center tables and add spacing */
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* Table headers and cells */
+table th, table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle; /* vertical center for all cells */
+}
+
+/* Action column */
+table th.action, table td.action {
+    text-align: left;        /* left-align text to line up with buttons */
+    vertical-align: middle;  /* vertical alignment consistent */
+}
+
+/* Buttons inline with text, consistent across all tables */
+table td .view-btn {
+    float: none;            /* remove float */
+    margin-left: 10px;      /* spacing from text */
+    display: inline-block;  /* ensure inline-block so buttons align with text */
+    vertical-align: middle; /* vertically center with text */
+}
+
+/* Header style */
+table th { 
+    background: #f1f1f1; 
+    text-align: left;
+    vertical-align: middle;
+}
+
+
+
+/* Buttons look */
+.view-btn {
+    background: #ff69b4;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+}
+.view-btn:hover { 
+    background: #e058a4; 
+}
+
+/* REMOVE any extra padding-right — not needed */
+
+
+  /* Contact cards */
+  .contact-container {
+    display: flex; justify-content: center; flex-wrap: wrap; gap: 30px; margin-top: 20px;
+  }
+  .contact-card {
+    display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #333;
+    transition: transform 0.3s ease;
+  }
+  .contact-card img { width: 60px; height: 60px; transition: transform 0.3s ease; }
+  .contact-card span { margin-top: 10px; font-weight: bold; }
+  .contact-card:hover { transform: translateY(-5px); }
+  .contact-card:hover img { transform: scale(1.1); }
+
+  /* Modals */
+  .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; }
+  .modal-content { background: white; border-radius: 8px; padding: 10px; width: 95%; height: 95%; display: flex; flex-direction: column; }
+  .close-btn { background: #ff69b4; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; margin-bottom: 10px; align-self: flex-end; font-size: 16px; }
+  .close-btn:hover { background: #e058a4; }
+  #pdfViewer, #imgViewer { flex: 1; overflow: auto; border: 1px solid #ddd; background: #fafafa; display: flex; flex-direction: column; align-items: center; }
+  #pdfViewer canvas, #imgViewer img { margin: 10px auto; border: 1px solid #ccc; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 90%; height: auto; }
+
+  /* Responsive */
+  @media (max-width: 900px) { .projects { grid-template-columns: repeat(2, 250px); } }
+  @media (max-width: 560px) { .projects { grid-template-columns: 1fr; } .intro-box { padding: 18px; } }
+
+  body.dark-mode {
+  background: #121212;
+  color: #eee;
+}
+
+body.dark-mode .sidebar {
+  background: #1e1e1e;
+  color: #eee;
+  border-right: 1px solid #444;
+}
+
+body.dark-mode .sidebar ul li {
+  color: #eee;
+}
+
+body.dark-mode .sidebar ul li.active,
+body.dark-mode .sidebar ul li:hover {
+  background: #ff69b4;
+  color: #fff;
+}
+
+body.dark-mode .intro-box {
+  background: linear-gradient(135deg, #8b008b, #b22222);
+  color: #fff;
+}
+
+body.dark-mode table {
+  background: #1e1e1e;
+  color: #eee;
+  border: 1px solid #333;
+}
+
+body.dark-mode table th {
+  background: #2a2a2a;
+  color: #fff;
+}
+
+body.dark-mode table td {
+  border-bottom: 1px solid #333;
+}
+
+body.dark-mode .view-btn {
+  background: #ff69b4;
+  color: white;
+}
+
+body.dark-mode .view-btn:hover {
+  background: #e058a4;
+}
+
+body.dark-mode .project-card {
+  background: #2a2a2a;
+  color: #eee;
+}
+
+body.dark-mode .contact-card {
+  color: #eee;
+}
+body.dark-mode .modal {
+  background: rgba(0, 0, 0, 0.95);
+}
+
+body.dark-mode .modal-content {
+  background: #1e1e1e;
+  color: #eee;
+}
+
+body.dark-mode #pdfViewer,
+body.dark-mode #imgViewer {
+  background: #121212;
+  color: #eee;
+  border: 1px solid #333;
+}
+
+body.dark-mode #pdfViewer canvas,
+body.dark-mode #imgViewer img {
+  border: 1px solid #555;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+}
+
+body.dark-mode .close-btn {
+  background: #ff69b4;
+  color: white;
+}
+.circle-item i.fa-google { color: #4285F4; }  /* Google blue */
+.circle-item i.fa-amazon { color: #FF9900; }  /* Amazon orange */
+
+</style>
+
 </head>
 <body>
 
+  <!-- Sidebar -->
   <div class="sidebar">
-    <h2>Job Application Manager</h2>
+    <h2>Portfolio</h2>
     <ul>
-      <li class="active" onclick="showSection('resumeSection', this)">Resume & Cover Letter</li>
-      <li onclick="showSection('certificateSection', this)">Certificates</li>
+      <li class="active" onclick="showSection('welcomeSection', this)">Welcome</li>
+      <li onclick="showSection('resumeSection', this)">Resume & Cover Letter</li>
       <li onclick="showSection('infoSection', this)">Additional Information</li>
-
+      <li onclick="showSection('certificateSection', this)">Certificates</li>
+      <li onclick="toggleDarkMode()" id="darkModeBtn">Toggle Dark Mode 🌙</li>
     </ul>
   </div>
 
+  <!-- Main Content -->
   <div class="main">
-    <!-- Resume Section -->
-    <div id="resumeSection" class="section active">
-      <div class="main-header">
-        <h1>Resume & Cover Letter</h1>
+
+    <!-- WELCOME -->
+    <div id="welcomeSection" class="section">
+      <div class="intro-box">
+        <img src="mypic.jpg" alt="My Picture">
+        <h1>Jian Carlo Estaniol</h1>
+        <p style="text-align: justify;">Hi! I’m Jian, an enthusiastic and motivated professional, ready to be your new virtual assistant. I have solid experience in programming and Amazon VA tasks, and I pride myself on being quick to adapt and learn new skills. I enjoy tackling challenges head-on and finding efficient solutions, making sure that every task I handle is done accurately and on time. With a proactive mindset and a passion for technology, I’m committed to supporting you and helping your projects succeed.</p>
       </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Status</th>
-            <th>Job</th>
-            <th>Resume</th>
-            <th>Cover Letter</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Interested</td>
-            <td>Virtual Assistant</td>
-            <td><button class="view-btn" onclick="openPDF('resume.pdf')">View</button></td>
-            <td><button class="view-btn" onclick="openPDF('coverletter.pdf')">View</button></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
- <!-- Certificates Section -->
-    <div id="certificateSection" class="section">
-      <div class="main-header">
-        <h1>Certificates</h1>
+      <!-- Skills -->
+      <h2>IT Skills</h2>
+      <div class="circle-grid">
+        <div class="circle-item"><i class="devicon-mysql-plain colored"></i><span>MySQL</span></div>
+        <div class="circle-item"><i class="devicon-php-plain colored"></i><span>PHP</span></div>
+        <div class="circle-item"><i class="devicon-java-plain colored"></i><span>Java</span></div>
+        <div class="circle-item"><i class="devicon-javascript-plain colored"></i><span>JavaScript</span></div>
+        <div class="circle-item"><i class="devicon-laravel-plain colored"></i><span>Laravel</span></div>
+        <div class="circle-item"><i class="devicon-css3-plain colored"></i><span>CSS</span></div>
+        <div class="circle-item"><i class="devicon-python-plain colored"></i><span>Python</span></div>
+        <div class="circle-item"><i class="devicon-html5-plain colored"></i><span>HTML</span></div>
       </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Selection</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          
-           <tr>
-            <td>Diploma</td>
-               <td><button class="view-btn" onclick="openPDF('diploma.pdf')">View</button></td>
-          </tr>
-           <tr>
-            <td>Transcript Of Records</td>
-               <td><button class="view-btn" onclick="openPDF('tor.pdf')">View</button></td>
-          </tr>
-          <tr>
-            <td>GPA</td>
-            <td><button class="view-btn" onclick="openImage('gpa.jpg')">View</button></td>
-          </tr>
-          <td>InfinaLab LLC Certificate of Employment</td>
-            <td><button class="view-btn" onclick="openPDF('coe.pdf')">View</button></td>
-          </tr>
-          <tr>
-            <td>Amazon Web Services Cloud</td>
-            <td><button class="view-btn" onclick="openImage('aws.jpg')">View</button></td>
-          </tr>
-          <tr>
-            <td>ASEAN Data Science Explorers</td>
-            <td><button class="view-btn" onclick="openImage('asean.jpg')">View</button></td>
-          </tr>
-          <tr>
-            <td>The Why and How of English Language in the Workplace</td>
-            <td><button class="view-btn" onclick="openImage('english.jpg')">View</button></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <!-- Additional Info Section -->
-    <div id="infoSection" class="section">
-      <div class="main-header">
-        <h1>Additional Information</h1>
+      <!-- Tools -->
+      <h2>Tools & Platforms</h2>
+<div class="circle-grid">
+  <div class="circle-item no-logo">
+    <img src="js.jpg" alt="Jungle Scout Logo" class="tool-logo">
+    <span>Jungle Scout</span>
+  </div>
+  <div class="circle-item no-logo">
+    <img src="keepa.png" alt="Keepa Logo" class="tool-logo">
+    <span>Keepa</span>
+  </div>
+  <div class="circle-item">
+    <i class="fa-brands fa-google"></i>
+    <span>Google Workspace</span>
+  </div>
+  <div class="circle-item">
+    <i class="fa-brands fa-amazon"></i>
+    <span>Amazon Seller Central</span>
+  </div>
+  <div class="circle-item no-logo">
+    <img src="superbrowser.png" alt="Superbrowser Logo" class="tool-logo">
+    <span>Superbrowser</span>
+  </div>
+  <div class="circle-item no-logo">
+    <img src="jijia.jpg" alt="Jijia App Logo" class="tool-logo">
+    <span>Jijia App</span>
+  </div>
+   <div class="circle-item no-logo">
+    <img src="lark.png" alt="Lark Logo" class="tool-logo">
+    <span>Lark Suite</span>
+  </div>
+</div>
+
+      <!-- Projects -->
+      <h2>IT Projects</h2>
+      <div class="projects-it">
+        <div class="project-card">
+          <img src="project1.jpg" alt="Project 1">
+          <div class="content">
+            <div><h3>HRMO MANAGEMENT SYSTEM</h3><p style="text-align: justify;">A Laravel PHP project deployed at the Municipality of Muñoz, serving as their central database for PDS and RESUME which lessen tangible documents and storage issues.<br><br>(admin@hrmo.com | password)<br>Credentials for demo use</p></div>
+            <button onclick="window.open('http://3.25.110.230/login','_blank')">Demo</button>
+          </div>
+        </div>
+       <!-- <div class="project-card">
+          <img src="project2.jpg" alt="Project 2">
+          <div class="content">
+            <div><h3>Product</h3><p>Project 2 description here...</p></div>
+            <button onclick="window.open('https://example.com/demo2','_blank')">Demo</button>
+          </div>
+        </div>
+        <div class="project-card">
+          <img src="project3.jpg" alt="Project 3">
+          <div class="content">
+            <div><h3>Project 3</h3><p>Project 3 description here...</p></div>
+            <button onclick="window.open('https://example.com/demo3','_blank')">Demo</button>
+          </div>
+        </div> -->
       </div>
+      <h2>Amazon Projects</h2>
+<div class="projects">
+  <div class="project-card">
+    <img src="am1.jpg" alt="VA Project 1">
+    <div class="content">
+      <div><h3>Package Design<br> & <br>3D  Modeling</h3><p style="text-align: justify;">Handled the complete package design process from start to finish, including designing, reviewing, and coordinating with the supplier for the final print of a product that we will be launching.</p></div>
+      <td class="action"><button class="view-btn" onclick="openPDF('model.pdf')">Projects Sample</button></td>
+    </div>
+  </div>
+  <div class="project-card">
+    <img src="am2.jpg" alt="VA Project 2">
+    <div class="content">
+      <div><h3>Product Research</h3><p style="text-align: justify;">A criteria-based product research that adapts over time according to market trends and movements.</p></div>
+      <button class="view-btn" onclick="window.open('https://docs.google.com/spreadsheets/d/18u-ScwpsP7jIokiBF0_MfuHW0ziRB1ji/edit?usp=sharing&ouid=112756310269599951232&rtpof=true&sd=true','_blank')">Sheet Sample</button>
+    </div>
+  </div>
+  <div class="project-card">
+    <img src="am3.jpg" alt="VA Project 3">
+    <div class="content">
+      <div><h3>Supplier Sourcing</h3><p style="text-align: justify;"> A collection of quotations and a list of potential suppliers from around the globe, some of whom became our partners, chosen for their competitive MOQ, prices, shipping time, and lead times. </p></div>
+       <div class="button-group">
+      <button class="view-btn"  onclick="window.open('https://docs.google.com/spreadsheets/d/1kafv9BeGJAiOIV6TNHX_l5hr4ApABC7o/edit?usp=sharing&ouid=112756310269599951232&rtpof=true&sd=true','_blank')">Sheet Sample</button>
+      <button class="view-btn" onclick="openPDF('quote.pdf')">Quotes Sample</button>
+    </div>
+    </div>
+  </div>
+</div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Selection</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>PC Specification</td>
-            <td><button class="view-btn" onclick="openImage('pcspecs.jpg')">View</button></td>
-          </tr>
-          <tr>
-            <td>Phone Specification</td>
-            <td><button class="view-btn" onclick="openImage('phonespecs.jpg')">View</button></td>
-          </tr>
-          <tr>
-            <td> Speedtest Result</td>
-            <td><button class="view-btn" onclick="openImage('speed.jpg')">View</button></td>
-          </tr>
-          <tr>
-            <td>Words Per Minute (WPM)</td>
-            <td><button class="view-btn" onclick="openImage('wpm.jpg')">View</button></td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- Contact -->
+      <h2>Contact Me</h2>
+      <div class="contact-container">
+ 
+  <a href="https://wa.me/639957951025" class="contact-card" target="_blank">
+    <img src="https://cdn.simpleicons.org/whatsapp/25D366" alt="WhatsApp">
+    <span>WhatsApp</span>
+    <span>+63 995 795 1025</span>
+  </a>
+  <a href="https://mail.google.com/mail/?view=cm&fs=1&to=estaniol20@gmail.com" class="contact-card" target="_blank">
+    <img src="https://cdn.simpleicons.org/gmail/D93025" alt="Gmail">
+    <span>Gmail </span>
+    <span>estaniol20@gmail.com </span>
+  </a>
+  <a href="https://discord.com/users/404256950348414977" class="contact-card" target="_blank">
+    <img src="https://cdn.simpleicons.org/discord/5865F2" alt="Discord">
+    <span>Discord</span>
+    <span>RGBisLyf#3757</span>
+  </a>
+ 
+</div>
     </div>
 
-  <!-- PDF Modal -->
+    <div id="resumeSection" class="section">
+  <div class="main-header"><h1>Resume & Cover Letter</h1></div>
+  <table>
+    <thead>
+      <tr>
+        <th>Status</th>
+        <th>Job</th>
+        <th>Resume</th>
+        <th>Cover Letter</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Interested</td>
+        <td>Virtual Assistant</td>
+        <td class="action"><button class="view-btn" onclick="openPDF('resume.pdf')">View</button></td>
+        <td class="action"><button class="view-btn" onclick="openPDF('coverletter.pdf')">View</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- CERTIFICATES -->
+<div id="certificateSection" class="section">
+  <div class="main-header"><h1>Certificates</h1></div>
+  <table>
+    <thead>
+      <tr>
+        <th>Certificate</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Diploma</td>
+        <td class="action"><button class="view-btn" onclick="openPDF('diploma.pdf')">View</button></td>
+      </tr>
+      <tr>
+        <td>Transcript Of Records</td>
+        <td class="action"><button class="view-btn" onclick="openPDF('tor.pdf')">View</button></td>
+      </tr>
+      <tr>
+        <td>GPA</td>
+        <td class="action"><button class="view-btn" onclick="openImage('gpa.jpg')">View</button></td>
+      </tr>
+      <tr>
+        <td>InfinaLab LLC Certificate of Employment</td>
+        <td class="action"><button class="view-btn" onclick="openPDF('coe.pdf')">View</button></td>
+      </tr>
+      <tr>
+        <td>Amazon Web Services Cloud</td>
+        <td class="action"><button class="view-btn" onclick="openImage('aws.jpg')">View</button></td>
+      </tr>
+      <tr>
+        <td>ASEAN Data Science Explorers</td>
+        <td class="action"><button class="view-btn" onclick="openImage('asean.jpg')">View</button></td>
+      </tr>
+      <tr>
+        <td>The Why and How of English Language in the Workplace</td>
+        <td class="action"><button class="view-btn" onclick="openImage('english.jpg')">View</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ADDITIONAL INFORMATION -->
+<div id="infoSection" class="section">
+  <div class="main-header"><h1>Additional Information</h1></div>
+  <table>
+    <thead>
+      <tr>
+        <th>Information</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>PC Specification</td>
+        <td class="action"><button class="view-btn" onclick="openImage('pcspecs.jpg')">View</button></td>
+      </tr>
+      <tr>
+        <td>Phone Specification</td>
+        <td class="action"><button class="view-btn" onclick="openImage('phonespecs.jpg')">View</button></td>
+      </tr>
+      <tr>
+        <td>Speedtest Result</td>
+        <td class="action"><button class="view-btn" onclick="openImage('speed.jpg')">View</button></td>
+      </tr>
+      <tr>
+        <td>Words Per Minute (WPM)</td>
+        <td class="action"><button class="view-btn" onclick="openImage('wpm.jpg')">View</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+  <!-- Modals -->
   <div id="fileModal" class="modal">
     <div class="modal-content">
       <button class="close-btn" onclick="closeModal('fileModal')">✖ Close</button>
       <div id="pdfViewer">Loading...</div>
     </div>
   </div>
-
-  <!-- Image Modal -->
   <div id="imgModal" class="modal">
     <div class="modal-content">
       <button class="close-btn" onclick="closeModal('imgModal')">✖ Close</button>
@@ -291,35 +618,44 @@ table th:last-child, table td:last-child {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
   <script>
-    // Sidebar navigation
+    // Sidebar section switching
     function showSection(sectionId, el) {
-      document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
-      document.getElementById(sectionId).classList.add("active");
+      document.querySelectorAll(".section").forEach(s => s.style.display = "none");
 
+      const section = document.getElementById(sectionId);
+      if (section) {
+        if (sectionId === "welcomeSection") {
+          section.style.display = "flex";
+          section.style.flexDirection = "column";
+          section.style.alignItems = "center";
+        } else {
+          section.style.display = "block";
+        }
+      }
+
+      // Update active class
       document.querySelectorAll(".sidebar ul li").forEach(li => li.classList.remove("active"));
-      el.classList.add("active");
+      if (el) el.classList.add("active");
     }
 
     // Open PDF in modal
     async function openPDF(file) {
       const modal = document.getElementById("fileModal");
       const pdfViewer = document.getElementById("pdfViewer");
-
       modal.style.display = "flex";
       pdfViewer.innerHTML = "Loading...";
 
       try {
         const pdfDoc = await pdfjsLib.getDocument(file).promise;
         pdfViewer.innerHTML = "";
-
         for (let i = 1; i <= pdfDoc.numPages; i++) {
           const page = await pdfDoc.getPage(i);
           const viewport = page.getViewport({ scale: 2 });
           const canvas = document.createElement("canvas");
           const ctx = canvas.getContext("2d");
-          canvas.height = viewport.height;
           canvas.width = viewport.width;
-          await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+          canvas.height = viewport.height;
+          await page.render({ canvasContext: ctx, viewport }).promise;
           pdfViewer.appendChild(canvas);
         }
       } catch (err) {
@@ -327,22 +663,39 @@ table th:last-child, table td:last-child {
       }
     }
 
-    // Open image in modal
+    // Open Image in modal
     function openImage(file) {
       const modal = document.getElementById("imgModal");
       const imgViewer = document.getElementById("imgViewer");
-
       modal.style.display = "flex";
-      imgViewer.innerHTML = `<img src="${file}" alt="Image Preview">`;
+      imgViewer.innerHTML = `<img src="${file}" alt="Image Preview" style="max-width:95%; height:auto;">`;
     }
 
     // Close modal
     function closeModal(id) {
-      document.getElementById(id).style.display = "none";
+      const modal = document.getElementById(id);
+      if (modal) modal.style.display = "none";
+
       if (id === "fileModal") document.getElementById("pdfViewer").innerHTML = "";
       if (id === "imgModal") document.getElementById("imgViewer").innerHTML = "";
     }
-  </script>
 
+    // Show welcome section by default
+    document.addEventListener("DOMContentLoaded", () => {
+      showSection('welcomeSection', document.querySelector('.sidebar ul li'));
+    });
+
+    function toggleDarkMode() {
+  document.body.classList.toggle("dark-mode");
+
+  // Change button text
+  const btn = document.getElementById("darkModeBtn");
+  if(document.body.classList.contains("dark-mode")) {
+    btn.textContent = "Light Mode ☀️";
+  } else {
+    btn.textContent = "Dark Mode 🌙";
+  }
+}
+  </script>
 </body>
 </html>
